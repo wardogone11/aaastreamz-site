@@ -5,6 +5,5 @@ Static site: `index.html` (home and install), `guide.html` (user guide), `privac
 **Status: PRIVATE, not live.** GitHub Pages is OFF, and it can't serve a private repo on a free account.
 
 Before going live:
-- Replace `SHORT-LINK-PENDING` in index.html with the install short link from the owner's TinyURL account.
-- Replace `CONTACT-EMAIL-PENDING` in privacy.html with the contact email.
-- Then make this repo public and turn on Pages (Settings > Pages > Deploy from branch `main`, root).
+- Placeholders are done: the install step uses Downloader code 4827015, and privacy.html's contact is aaastreamz@gmail.com.
+- Make this repo public and turn on Pages (Settings > Pages > Deploy from branch `main`, root).
