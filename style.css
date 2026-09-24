@@ -72,6 +72,20 @@ code, kbd {
 .btn.primary:hover { filter: brightness(1.08); }
 .devices { margin-top: 22px; color: var(--text-dim); font-size: 14px; }
 
+.hero-shot { margin: 44px auto 0; max-width: 960px; }
+.hero-shot img, .shots img {
+  width: 100%; height: auto; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface);
+}
+.hero-shot img { box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--accent-dim); }
+
+/* ---- Screenshots ---- */
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.shots figure { margin: 0; }
+.shots a { display: block; border-radius: var(--radius); }
+.shots a:hover img, .shots a:focus-visible img { border-color: var(--accent); }
+.shots figcaption { color: var(--text-dim); font-size: 14.5px; margin-top: 8px; }
+
 /* ---- Sections ---- */
 section { padding: 56px 0; border-top: 1px solid var(--border); }
 section h2 { font-size: clamp(26px, 3.6vw, 34px); letter-spacing: -0.01em; margin-bottom: 8px; }
@@ -156,6 +170,7 @@ th { color: var(--text-dim); font-weight: 600; font-size: 14px; }
 @media (max-width: 640px) {
   body { font-size: 16px; }
   .nav { gap: 14px; font-size: 14px; }
+  .nav a[href="#screenshots"], .nav a[href="#tip"] { display: none; }
   .hero { padding: 56px 0 44px; }
   .step { grid-template-columns: 36px 1fr; gap: 12px; padding: 16px; }
   .step::before { width: 36px; height: 36px; font-size: 16px; }
