@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AAAstreamz Privacy Policy</title>
+  <meta name="description" content="What AAAstreamz collects, why, and who it's shared with.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html"><span class="dot"></span><span><span class="aaa">AAA</span>streamz</span></a>
+      <nav class="nav">
+        <a href="index.html#install">Install</a>
+        <a href="guide.html">Guide</a>
+        <a href="privacy.html" aria-current="page">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="doc">
+    <div class="wrap">
+      <h1>Privacy Policy</h1>
+      <p class="meta">Effective September 24, 2026</p>
+
+      <p>AAAstreamz ("the app") is a media player for TV devices. It plays streams from an IPTV provider that <strong>you</strong> choose and log in to. We don't provide, host or sell any channels or content, and you don't create an account with us. This policy explains what information the app uses, where it goes, and why.</p>
+
+      <h2>The short version</h2>
+      <ul>
+        <li>Your provider login (server, username, password or playlist link) is stored <strong>only on your device</strong> and sent <strong>only to your provider</strong>.</li>
+        <li>We receive crash reports and, if you send one, a problem report. Neither includes your username or password.</li>
+        <li>No ads, no advertising IDs, and we never sell or rent your information.</li>
+      </ul>
+
+      <h2>Information stored on your device</h2>
+      <p>These stay on your TV box and are never sent to us: your provider login details, favorites, recently watched channels, playback positions, hidden channels and categories, your parental-control PIN, your settings, and any recordings you make. Uninstalling the app deletes all of it.</p>
+
+      <h2>Information sent to your IPTV provider</h2>
+      <p>To show channels, guides, movies and series and to play them, the app connects to the provider you logged in to. That provider receives your login details and your device's IP address, as with any IPTV player. How your provider handles that is covered by <strong>their</strong> privacy policy, not this one.</p>
+
+      <h2>Information we receive</h2>
+      <h3>Crash reports</h3>
+      <p>If the app crashes, it sends a crash report through <strong>Firebase Crashlytics</strong> (a Google service). A report includes the app version, device model, Android version, technical details of the crash, and a random installation identifier. We use it only to find and fix bugs.</p>
+
+      <h3>"Report a problem"</h3>
+      <p>Only when you choose <strong>Settings › About › Report a problem</strong>, the app sends us, through Firebase Crashlytics:</p>
+      <ul>
+        <li>Your note, if you write one</li>
+        <li>The app version, your device model, and your app settings (decoder, buffer size and the like)</li>
+        <li>Your provider's server address (not your username or password)</li>
+        <li>A short log of what the app did recently, with your username and password removed</li>
+      </ul>
+      <p>You get a report number so we can match your report if you contact us.</p>
+
+      <h3>App configuration and updates</h3>
+      <p>When the app starts, it checks <strong>Firebase Remote Config</strong> (Google) for settings such as whether a new version is available. Google receives the standard technical information needed for that request, such as an installation identifier and your IP address. Updates are downloaded from <strong>GitHub</strong> (github.com), which sees your IP address when the file is downloaded.</p>
+
+      <h2>Optional features that contact other services</h2>
+      <ul>
+        <li><strong>Speed test</strong> (only when you run it): the app downloads test data from your provider and from <strong>Cloudflare</strong>'s public speed-test server (speed.cloudflare.com), which sees your IP address. The result is kept in the app's log and is included only if you send a problem report.</li>
+        <li><strong>AI search in Ask</strong> (off by default): if you turn it on and enter <strong>your own</strong> Anthropic API key, your search text and a list of programmes currently airing are sent to <strong>Anthropic</strong> (api.anthropic.com) under your key and your Anthropic account. We never see your key or your searches. The free built-in search doesn't send anything anywhere.</li>
+        <li><strong>Voice typing</strong> is handled by your device's keyboard (for example Gboard) under that keyboard's own privacy policy. The app only receives the finished text.</li>
+        <li><strong>Phone remote</strong> works only over your home Wi-Fi, between your phone and your TV box. Nothing goes over the internet or to us.</li>
+      </ul>
+
+      <h2>Who we share information with</h2>
+      <p>Only the service providers named above (Google Firebase, GitHub, Cloudflare, and Anthropic if you turn on AI search), and only for the purposes described. We don't sell, rent or trade personal information, and we don't use it for advertising.</p>
+
+      <h2>How long we keep it</h2>
+      <p>Crash and problem reports are kept by Firebase Crashlytics for up to 90 days and then deleted automatically.</p>
+
+      <h2>Children</h2>
+      <p>The app isn't directed at children under 13, and we don't knowingly collect personal information from children. Parental controls are available in Settings to lock categories behind a PIN.</p>
+
+      <h2>Your choices</h2>
+      <ul>
+        <li>Don't use "Report a problem", the speed test or AI search if you don't want that information sent.</li>
+        <li>Uninstall the app to delete everything stored on your device.</li>
+        <li>To ask about, or request deletion of, a report you sent, contact us with your report number.</li>
+      </ul>
+
+      <h2>Changes</h2>
+      <p>If this policy changes, we'll update the date at the top of this page.</p>
+
+      <h2>Contact</h2>
+      <!-- TODO before going live: the user's chosen contact email. -->
+      <p>Questions? Email <strong>CONTACT-EMAIL-PENDING</strong>.</p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>© 2026 AAAstreamz</span>
+      <span><a href="index.html">Home</a> · <a href="guide.html">User guide</a></span>
+    </div>
+  </footer>
+</body>
+</html>
