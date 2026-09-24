@@ -114,6 +114,16 @@ section .sub { color: var(--text-dim); margin-bottom: 28px; max-width: 680px; }
 }
 .note.warn { border-left-color: var(--warn); }
 
+/* ---- Tip (Ko-fi) ---- */
+.tip-card {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  background: linear-gradient(135deg, var(--surface) 0%, #10202f 100%);
+  border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 28px;
+}
+.tip-card .sub { margin-bottom: 0; }
+.btn.kofi { background: #ff5e5b; border-color: #ff5e5b; color: #fff; font-size: 17px; padding: 14px 26px; }
+.btn.kofi:hover { filter: brightness(1.08); }
+
 /* ---- Tables ---- */
 table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
 th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
