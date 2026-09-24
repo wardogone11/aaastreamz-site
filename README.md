@@ -7,5 +7,5 @@ Static site: `index.html` (home and install), `guide.html` (user guide), `privac
 Before going live:
 - Replace `SHORT-LINK-PENDING` in index.html with the install short link from the owner's TinyURL account.
 - Replace `CONTACT-EMAIL-PENDING` in privacy.html with the contact email.
-- Add the Support/donate section (placeholder comment in index.html) once donation links exist.
+- Replace `KOFI-LINK-PENDING` in index.html (Tip section) with the owner's Ko-fi page link.
 - Then make this repo public and turn on Pages (Settings > Pages > Deploy from branch `main`, root).
