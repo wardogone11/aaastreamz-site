@@ -80,7 +80,7 @@ code, kbd {
 .hero-shot img { box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--accent-dim); }
 
 /* ---- Screenshots ---- */
-.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 20px; }
 .shots figure { margin: 0; }
 .shots a { display: block; border-radius: var(--radius); }
 .shots a:hover img, .shots a:focus-visible img { border-color: var(--accent); }
@@ -161,6 +161,22 @@ th { color: var(--text-dim); font-weight: 600; font-size: 14px; }
 .toc a { color: var(--text-dim); }
 .toc a:hover { color: var(--text); }
 
+/* ---- Release notes ---- */
+.release {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 22px 24px; margin-top: 18px;
+}
+.doc .release h2 { margin: 0; padding: 0; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+.rel-tag {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-dim); border-radius: 999px; padding: 2px 10px;
+}
+.doc .rel-date { color: var(--text-dim); font-size: 14px; margin: 2px 0 10px; }
+.doc .rel-early { color: var(--text-dim); font-size: 14.5px; margin-top: 22px; }
+
+/* ---- Feature card "how to" link ---- */
+.card .how { display: inline-block; margin-top: 10px; font-size: 14.5px; font-weight: 600; }
+
 /* ---- Footer ---- */
 .site-footer { border-top: 1px solid var(--border); padding: 28px 0 40px; color: var(--text-dim); font-size: 14px; }
 .site-footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -169,10 +185,17 @@ th { color: var(--text-dim); font-weight: 600; font-size: 14px; }
 
 @media (max-width: 640px) {
   body { font-size: 16px; }
-  .nav { gap: 14px; font-size: 14px; }
-  .nav a[href="#screenshots"], .nav a[href="#tip"] { display: none; }
+  .nav { gap: 12px; font-size: 14px; }
+  .nav a { white-space: nowrap; }
+  .brand { font-size: 18px; }
+  .nav a[href="#screenshots"], .nav a[href="#tip"], .nav a[href="privacy.html"] { display: none; }
   .hero { padding: 56px 0 44px; }
   .step { grid-template-columns: 36px 1fr; gap: 12px; padding: 16px; }
   .step::before { width: 36px; height: 36px; font-size: 16px; }
   .toc ol { columns: 1; }
+}
+/* Smallest phones: "What's new" is still linked from every page's footer. */
+@media (max-width: 370px) {
+  .nav a[href="releases.html"]:not([aria-current]) { display: none; }
+  .nav:has(a[href="releases.html"][aria-current]) a[href="index.html#install"] { display: none; }
 }
