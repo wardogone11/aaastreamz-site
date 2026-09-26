@@ -189,6 +189,8 @@ th { color: var(--text-dim); font-weight: 600; font-size: 14px; }
   .nav a { white-space: nowrap; }
   .brand { font-size: 18px; }
   .nav a[href="#screenshots"], .nav a[href="#tip"], .nav a[href="privacy.html"] { display: none; }
+  /* FAQ is in every page's footer (and the manual); in the phone nav only on the FAQ page itself. */
+  .nav a[href="faq.html"]:not([aria-current]) { display: none; }
   .hero { padding: 56px 0 44px; }
   .step { grid-template-columns: 36px 1fr; gap: 12px; padding: 16px; }
   .step::before { width: 36px; height: 36px; font-size: 16px; }
