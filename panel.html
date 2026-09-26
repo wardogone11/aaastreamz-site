@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AAAstreamz Panel</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <meta name="theme-color" content="#0a1f5c">
+  <style>
+    :root {
+      --bg: #040a1f; --surface: #0a1433; --raised: #122052; --border: #1d2e68;
+      --text: #eef1f6; --dim: #8193bd; --accent: #3ea6ff; --good: #4caf50; --bad: #ff6b6b;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --mono: Consolas, 'Roboto Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font: 16px/1.5 var(--sans); min-height: 100vh; }
+    header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+    header img { width: 30px; height: 30px; border-radius: 8px; }
+    header h1 { font-size: 18px; white-space: nowrap; }
+    header h1 span { color: var(--accent); }
+    header .grow { flex: 1; }
+    header .who { color: var(--dim); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 35vw; }
+
+    .layout { display: flex; min-height: calc(100vh - 55px); }
+    nav { width: 220px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); padding: 14px 10px; }
+    nav .provider { padding: 4px 10px 14px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+    nav .provider .name { font-weight: 600; }
+    nav .provider .code { font-family: var(--mono); color: var(--accent); letter-spacing: 2px; font-size: 14px; }
+    nav button { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; background: none; color: var(--text); padding: 10px 12px; border-radius: 9px; font: inherit; cursor: pointer; }
+    nav button:hover { background: var(--raised); }
+    nav button.active { background: linear-gradient(90deg, #1b3fd6, #6d28d9); }
+    main { flex: 1; min-width: 0; padding: 24px 16px 60px; }
+    .inner { max-width: 820px; margin: 0 auto; }
+    @media (max-width: 720px) {
+      .layout { flex-direction: column; }
+      nav { width: auto; border-right: 0; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; }
+      nav .provider { width: 100%; padding: 0 4px 8px; margin-bottom: 4px; }
+      nav button { width: auto; padding: 8px 12px; }
+      #navLogout { margin-top: 0 !important; border-top: 0 !important; border-radius: 9px !important; }
+      header .who { display: none; }
+      header h1 { font-size: 16px; }
+      main { padding: 18px 12px 40px; }
+      .card { padding: 14px; }
+      table, tbody, tr { display: block; }
+      thead { display: none; }
+      tr { padding: 8px 0; border-bottom: 1px solid var(--border); }
+      td { display: block; border: 0 !important; padding: 4px 0; }
+      td.acts { text-align: left; width: auto; }
+      td.acts button { margin: 0 4px 0 0; }
+      .layout-opt { width: 100%; }
+    }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
+    h2 { font-size: 22px; margin-bottom: 4px; }
+    h3 { font-size: 16px; margin: 18px 0 8px; }
+    .dim { color: var(--dim); font-size: 14px; }
+    label { display: block; font-size: 13px; color: var(--dim); margin: 12px 0 4px; }
+    input[type=text], input[type=email], input[type=password], input[type=date], textarea {
+      width: 100%; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--raised); color: var(--text); font: inherit;
+    }
+    textarea { min-height: 90px; resize: vertical; }
+    button.btn { font: inherit; cursor: pointer; border-radius: 9px; border: 1px solid var(--border); background: var(--raised); color: var(--text); padding: 9px 14px; }
+    button.primary { background: linear-gradient(90deg, #1b3fd6, #6d28d9); border-color: transparent; font-weight: 600; }
+    button.danger { color: var(--bad); }
+    button:disabled { opacity: .45; cursor: default; }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .row > input { flex: 1; min-width: 160px; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    th { color: var(--dim); font-size: 13px; font-weight: 500; }
+    td.url { word-break: break-all; font-family: var(--mono); font-size: 14px; }
+    td.acts { white-space: nowrap; text-align: right; width: 1%; }
+    td.acts button { padding: 6px 9px; margin-left: 2px; }
+    td .num { color: var(--dim); font-size: 13px; }
+
+    .swatches { display: flex; gap: 12px; flex-wrap: wrap; }
+    .swatch { width: 64px; height: 64px; border-radius: 14px; border: 3px solid transparent; cursor: pointer; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 12px; color: #fff; text-shadow: 0 1px 2px #000; }
+    .swatch.sel { border-color: #fff; }
+    .layouts { display: flex; gap: 14px; flex-wrap: wrap; }
+    .layout-opt { cursor: pointer; border: 2px solid var(--border); border-radius: 12px; padding: 10px; width: 200px; background: var(--raised); }
+    .layout-opt.sel { border-color: var(--accent); }
+    .layout-opt svg { width: 100%; height: auto; display: block; margin-bottom: 6px; }
+
+    .tv { background: #000; border-radius: 12px; padding: 18px; margin-top: 14px; border: 1px solid var(--border); }
+    .tv .note { max-width: 420px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+    .tv .note b { display: block; margin-bottom: 6px; }
+    .tv .note p { white-space: pre-wrap; font-size: 14px; }
+
+    .pill { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 99px; border: 1px solid var(--border); }
+    .pill.on { color: var(--good); border-color: var(--good); }
+    .pill.off { color: var(--bad); border-color: var(--bad); }
+    .msg { margin-top: 12px; font-size: 14px; min-height: 1.5em; }
+    .msg.err { color: var(--bad); }
+    .msg.ok { color: var(--good); }
+    .hidden { display: none !important; }
+    code { font-family: var(--mono); background: var(--raised); padding: 1px 6px; border-radius: 6px; word-break: break-all; }
+    .center { max-width: 460px; margin: 40px auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="img/icon-64.png" alt="">
+    <h1><span>AAA</span>streamz Panel</h1>
+    <div class="grow"></div>
+    <div class="who" id="who"></div>
+    <button class="btn hidden" id="signOutBtn">Log out</button>
+  </header>
+
+  <div class="card center hidden" id="notConfigured">
+    <h2>Panel not switched on yet</h2>
+    <p class="dim">This panel is ready but isn't connected to its database yet.</p>
+  </div>
+
+  <div class="card center hidden" id="authCard">
+    <h2 id="authTitle">Log in</h2>
+    <p class="dim">Manage the servers, notifications and theme your customers see.</p>
+    <form id="authForm">
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" required>
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password" required minlength="8">
+      <div class="row" style="margin-top:16px">
+        <button type="submit" class="btn primary" id="authSubmit">Log in</button>
+        <!-- Sign-ups are closed (owner-only panel): accounts are added in the Firebase console. -->
+          <button type="button" class="btn hidden" id="toggleAuth">Create an account</button>
+        <button type="button" class="btn" id="resetBtn">Forgot password</button>
+      </div>
+    </form>
+    <div class="msg" id="authMsg"></div>
+  </div>
+
+  <div class="card center hidden" id="pendingCard">
+    <h2>Account created</h2>
+    <p>Your account isn't linked to an app yet. Send this account ID to AAAstreamz:</p>
+    <p style="margin:12px 0"><code id="myUid"></code> <button class="btn" type="button" id="copyUid">Copy</button></p>
+    <p class="dim">Once it's linked, reload this page.</p>
+  </div>
+
+  <div class="layout hidden" id="app">
+    <nav>
+      <div class="provider"><div class="name" id="provName"></div><div class="code" id="provCode"></div></div>
+      <button type="button" data-page="portals">🖧 Portals</button>
+      <button type="button" data-page="notifications">📢 Notifications</button>
+      <button type="button" data-page="themes">🎨 Themes</button>
+      <button type="button" data-page="admin" class="hidden" id="adminNav">🔧 Admin</button>
+      <button type="button" id="navLogout" style="margin-top:12px; border-top:1px solid var(--border); border-radius:0">🚪 Log out</button>
+    </nav>
+    <main><div class="inner">
+
+      <section id="page-portals" class="page">
+        <h2>Portals</h2>
+        <p class="dim">The server addresses your app connects to. Customers only type their username and password. If the first server is down, the app tries the next one.</p>
+        <div class="card" style="margin-top:14px">
+          <div class="row">
+            <input type="text" id="newPortal" placeholder="http://your-server.com:8080">
+            <button type="button" class="btn primary" id="addPortal">+ Add portal</button>
+          </div>
+          <table>
+            <thead><tr><th>Portal</th><th></th></tr></thead>
+            <tbody id="portalRows"></tbody>
+          </table>
+          <div class="msg" id="portalMsg"></div>
+        </div>
+      </section>
+
+      <section id="page-notifications" class="page hidden">
+        <h2>Notifications</h2>
+        <p class="dim">A message that pops up once on every customer's TV the next time they open the app.</p>
+        <div class="card" style="margin-top:14px">
+          <div class="row" style="justify-content:space-between">
+            <h3 style="margin:0">Current notification</h3>
+            <span class="pill" id="noteStatus"></span>
+          </div>
+          <label for="noteTitle">Title</label>
+          <input type="text" id="noteTitle" maxlength="80" placeholder="e.g. Server maintenance tonight">
+          <label for="noteText">Message</label>
+          <textarea id="noteText" maxlength="500" placeholder="e.g. Some channels may be off between 2 and 4 AM."></textarea>
+          <div class="tv"><div class="note"><b id="notePrevTitle"></b><p id="notePrevText"></p></div></div>
+          <div class="row" style="margin-top:16px">
+            <button type="button" class="btn primary" id="noteSend">Send to customers</button>
+            <button type="button" class="btn" id="noteStop">Stop showing</button>
+          </div>
+          <p class="dim" style="margin-top:8px">Each customer sees a notification once. Sending again (even the same text) shows it again.</p>
+          <div class="msg" id="noteMsg"></div>
+        </div>
+      </section>
+
+      <section id="page-themes" class="page hidden">
+        <h2>Themes</h2>
+        <p class="dim">How the app looks when a customer first opens it. Customers can still change it in the app's Settings.</p>
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin-top:0">Colour</h3>
+          <div class="swatches" id="swatches"></div>
+          <h3>Layout</h3>
+          <div class="layouts" id="layouts"></div>
+          <div class="row" style="margin-top:20px"><button type="button" class="btn primary" id="themeSave">Save theme</button></div>
+          <div class="msg" id="themeMsg"></div>
+        </div>
+      </section>
+
+      <section id="page-admin" class="page hidden">
+        <h2>Admin</h2>
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin-top:0">Apps</h3>
+          <table><thead><tr><th>Code</th><th>Name</th><th>Status</th><th></th></tr></thead><tbody id="adminRows"></tbody></table>
+          <div class="msg" id="adminMsg"></div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">New app</h3>
+          <form id="newForm">
+            <label>App name</label><input type="text" id="npName" maxlength="60" required>
+            <label>Buyer's account ID (from their "Account created" screen)</label><input type="text" id="npOwner" required>
+            <label>First portal</label><input type="text" id="npUrl" placeholder="http://their-server.com:8080" required>
+            <label>Expires (optional)</label><input type="date" id="npExpiry" style="max-width:200px">
+            <div class="row" style="margin-top:16px"><button type="submit" class="btn primary">Create</button></div>
+            <div class="msg" id="npMsg"></div>
+          </form>
+        </div>
+      </section>
+
+    </div></main>
+  </div>
+
+  <script type="module">
+    // ---- Fill these in from Firebase console › Project settings › Your apps › Web app ----
+    const FIREBASE_CONFIG = {
+      apiKey: 'AIzaSyA7waHya2h22Me1vSWIkmuFR1eDwHf-Bwc',
+      authDomain: 'aaastreamz-3b3ff.firebaseapp.com',
+      projectId: 'aaastreamz-3b3ff',
+      appId: '1:995082751357:web:a8d7d6275eac4b8a109014',
+    };
+    // UI only; the real admin check is the UID list in firestore.rules. Keep the two in sync.
+    const ADMIN_UIDS = ['9ntxOx1O30QuYE3LVcc7AtTfjUG2'];
+    // Same keys and colours as the app's ACCENTS / settings.layout.
+    const ACCENTS = { blue: '#3ea6ff', red: '#ff5252', green: '#4caf50', purple: '#b388ff' };
+    const LAYOUTS = { classic: 'Top', side: 'Side' };
+
+    const $ = (id) => document.getElementById(id);
+    const show = (id, on = true) => $(id).classList.toggle('hidden', !on);
+    const say = (id, t, ok) => { $(id).textContent = t; $(id).className = 'msg ' + (ok ? 'ok' : 'err'); };
+    if (FIREBASE_CONFIG.apiKey === 'REPLACE_ME') { show('notConfigured'); throw new Error('Firebase config not filled in'); }
+
+    const V = '10.12.2';
+    const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+    const A = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`);
+    const F = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+    const app = initializeApp(FIREBASE_CONFIG);
+    const auth = A.getAuth(app);
+    const db = F.getFirestore(app);
+
+    // ---------- Auth ----------
+    let creating = false;
+    const setAuthMode = (c) => {
+      creating = c;
+      $('authTitle').textContent = c ? 'Create an account' : 'Log in';
+      $('authSubmit').textContent = c ? 'Create account' : 'Log in';
+      $('toggleAuth').textContent = c ? 'I already have an account' : 'Create an account';
+      $('password').autocomplete = c ? 'new-password' : 'current-password';
+      $('authMsg').textContent = '';
+    };
+    $('toggleAuth').onclick = () => setAuthMode(!creating);
+    const niceAuthError = (e) => ({
+      'auth/invalid-credential': 'Wrong email or password.',
+      'auth/wrong-password': 'Wrong email or password.',
+      'auth/user-not-found': 'Wrong email or password.',
+      'auth/email-already-in-use': 'That email already has an account. Log in instead.',
+      'auth/weak-password': 'Use at least 8 characters.',
+      'auth/too-many-requests': 'Too many attempts. Wait a few minutes and try again.',
+      'auth/invalid-email': 'That email address doesn\'t look right.',
+    }[e.code] || e.message);
+    $('authForm').onsubmit = async (ev) => {
+      ev.preventDefault();
+      const email = $('email').value.trim(), pw = $('password').value;
+      try {
+        if (creating) await A.createUserWithEmailAndPassword(auth, email, pw);
+        else await A.signInWithEmailAndPassword(auth, email, pw);
+      } catch (e) { say('authMsg', niceAuthError(e)); }
+    };
+    $('resetBtn').onclick = async () => {
+      const email = $('email').value.trim();
+      if (!email) return say('authMsg', 'Type your email first.');
+      try { await A.sendPasswordResetEmail(auth, email); say('authMsg', 'Reset email sent. Check your inbox.', true); }
+      catch (e) { say('authMsg', niceAuthError(e)); }
+    };
+    $('signOutBtn').onclick = () => A.signOut(auth);
+    $('navLogout').onclick = () => { current = null; A.signOut(auth); };
+    $('copyUid').onclick = () => navigator.clipboard.writeText($('myUid').textContent);
+
+    let isAdmin = false;
+    A.onAuthStateChanged(auth, async (user) => {
+      for (const id of ['authCard', 'pendingCard', 'app']) show(id, false);
+      show('signOutBtn', !!user);
+      $('who').textContent = user ? user.email : '';
+      if (!user) { setAuthMode(false); show('authCard'); return; }
+      isAdmin = ADMIN_UIDS.includes(user.uid);
+      show('adminNav', isAdmin);
+      if (isAdmin) { show('app'); await loadAdmin(); return; }
+      try {
+        const snap = await F.getDocs(F.query(F.collection(db, 'providers'), F.where('ownerUid', '==', user.uid)));
+        if (snap.empty) throw new Error('none');
+        const d = snap.docs[0];
+        openProvider(d.id, d.data());
+        show('app');
+      } catch (e) {
+        $('myUid').textContent = user.uid;
+        show('pendingCard');
+      }
+    });
+
+    // ---------- Pages ----------
+    const pageButtons = document.querySelectorAll('nav button[data-page]');
+    function goPage(name) {
+      pageButtons.forEach(b => b.classList.toggle('active', b.dataset.page === name));
+      document.querySelectorAll('.page').forEach(p => p.classList.toggle('hidden', p.id !== 'page-' + name));
+    }
+    pageButtons.forEach(b => b.onclick = () => {
+      if (b.dataset.page !== 'admin' && !current) return say('adminMsg', 'Pick an app below first (Manage).');
+      goPage(b.dataset.page);
+      if (b.dataset.page === 'admin') loadAdmin();
+    });
+
+    let current = null; // { code, data, ref }
+    function openProvider(code, data) {
+      current = { code, data, ref: F.doc(db, 'providers', code) };
+      $('provName').textContent = data.name || '';
+      $('provCode').textContent = code;
+      paintPortals(); paintNote(); paintTheme();
+      goPage('portals');
+    }
+    const save = (fields) => F.updateDoc(current.ref, { ...fields, updatedAt: F.serverTimestamp() });
+
+    // ---------- Portals ----------
+    const cleanUrl = (u) => u.trim().replace(/\/+$/, '');
+    const validUrl = (u) => /^https?:\/\/[^\s/]+/i.test(u);
+    async function savePortals(list, okText) {
+      try { await save({ portals: list }); current.data.portals = list; paintPortals(); say('portalMsg', okText, true); }
+      catch (e) { say('portalMsg', 'Could not save: ' + e.message); }
+    }
+    function paintPortals() {
+      const list = current.data.portals || [];
+      const body = $('portalRows'); body.innerHTML = '';
+      list.forEach((p, i) => {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td'); td.className = 'url';
+        td.innerHTML = `<span class="num">${i + 1}.</span> `; td.append(p.url);
+        const acts = document.createElement('td'); acts.className = 'acts';
+        const mk = (t, title, fn, dis, cls) => { const b = document.createElement('button'); b.className = 'btn ' + (cls || ''); b.type = 'button'; b.textContent = t; b.title = title; b.disabled = !!dis; b.onclick = fn; acts.appendChild(b); };
+        mk('▲', 'Move up', () => { const l = [...list]; [l[i - 1], l[i]] = [l[i], l[i - 1]]; savePortals(l, 'Order saved.'); }, i === 0);
+        mk('▼', 'Move down', () => { const l = [...list]; [l[i + 1], l[i]] = [l[i], l[i + 1]]; savePortals(l, 'Order saved.'); }, i === list.length - 1);
+        mk('✏️', 'Edit', () => {
+          const v = prompt('Edit portal', p.url); if (v == null) return;
+          const u = cleanUrl(v); if (!validUrl(u)) return say('portalMsg', 'A portal must start with http:// or https://');
+          const l = [...list]; l[i] = { url: u }; savePortals(l, 'Portal updated.');
+        });
+        mk('🗑', 'Delete', () => {
+          if (list.length === 1) return say('portalMsg', 'Keep at least one portal. Add the new one first, then delete this.');
+          if (!confirm(`Delete ${p.url}?`)) return;
+          savePortals(list.filter((_, j) => j !== i), 'Portal deleted.');
+        }, false, 'danger');
+        tr.append(td, acts); body.appendChild(tr);
+      });
+      $('addPortal').disabled = list.length >= 10;
+    }
+    $('addPortal').onclick = () => {
+      const u = cleanUrl($('newPortal').value);
+      if (!validUrl(u)) return say('portalMsg', 'A portal must start with http:// or https://');
+      const list = current.data.portals || [];
+      if (list.some(p => p.url === u)) return say('portalMsg', 'That portal is already in the list.');
+      $('newPortal').value = '';
+      savePortals([...list, { url: u }], 'Portal added.');
+    };
+    $('newPortal').onkeydown = (ev) => { if (ev.key === 'Enter') $('addPortal').click(); };
+
+    // ---------- Notifications ----------
+    function paintNote() {
+      const n = current.data.notification;
+      $('noteTitle').value = n ? n.title : '';
+      $('noteText').value = n ? n.text : '';
+      const on = !!(n && n.enabled);
+      $('noteStatus').textContent = on ? 'Showing' : 'Not showing';
+      $('noteStatus').className = 'pill ' + (on ? 'on' : 'off');
+      $('noteStop').disabled = !on;
+      paintNotePreview();
+    }
+    function paintNotePreview() {
+      $('notePrevTitle').textContent = $('noteTitle').value || 'Title';
+      $('notePrevText').textContent = $('noteText').value || 'Your message appears here.';
+    }
+    $('noteTitle').oninput = paintNotePreview;
+    $('noteText').oninput = paintNotePreview;
+    $('noteSend').onclick = async () => {
+      const title = $('noteTitle').value.trim(), text = $('noteText').value.trim();
+      if (!title && !text) return say('noteMsg', 'Write a title or a message first.');
+      const notification = { id: String(Date.now()), title, text, enabled: true };
+      try { await save({ notification }); current.data.notification = notification; paintNote(); say('noteMsg', 'Sent. Customers see it the next time they open the app.', true); }
+      catch (e) { say('noteMsg', 'Could not send: ' + e.message); }
+    };
+    $('noteStop').onclick = async () => {
+      const n = current.data.notification; if (!n) return;
+      const notification = { ...n, enabled: false };
+      try { await save({ notification }); current.data.notification = notification; paintNote(); say('noteMsg', 'Stopped. Customers who haven\'t seen it yet won\'t.', true); }
+      catch (e) { say('noteMsg', 'Could not update: ' + e.message); }
+    };
+
+    // ---------- Themes ----------
+    let pick = { accent: 'blue', layout: 'classic' };
+    const layoutSvg = (side, color) => side
+      ? `<svg viewBox="0 0 160 90"><rect width="160" height="90" rx="6" fill="#040a1f"/><rect x="6" y="6" width="36" height="78" rx="3" fill="#122052"/><rect x="9" y="12" width="30" height="7" rx="2" fill="${color}"/><rect x="48" y="6" width="56" height="78" rx="3" fill="#0a1433"/>${[0,1,2,3,4].map(i => `<rect x="52" y="${12 + i * 14}" width="48" height="9" rx="2" fill="#1d2e68"/>`).join('')}<rect x="110" y="6" width="44" height="30" rx="3" fill="#333"/><rect x="110" y="40" width="44" height="20" rx="3" fill="#0a1433"/></svg>`
+      : `<svg viewBox="0 0 160 90"><rect width="160" height="90" rx="6" fill="#040a1f"/><rect x="6" y="6" width="148" height="10" rx="3" fill="#0a1433"/>${[0,1,2,3].map(i => `<rect x="${6 + i * 26}" y="20" width="22" height="8" rx="4" fill="${i === 0 ? color : '#122052'}"/>`).join('')}<rect x="6" y="32" width="62" height="52" rx="3" fill="#0a1433"/>${[0,1,2,3].map(i => `<rect x="10" y="${36 + i * 12}" width="54" height="8" rx="2" fill="#1d2e68"/>`).join('')}<rect x="74" y="32" width="80" height="52" rx="3" fill="#333"/></svg>`;
+    function paintTheme() {
+      pick = { accent: 'blue', layout: 'classic', ...(current.data.theme || {}) };
+      paintThemePickers();
+    }
+    function paintThemePickers() {
+      const sw = $('swatches'); sw.innerHTML = '';
+      for (const [k, c] of Object.entries(ACCENTS)) {
+        const d = document.createElement('div'); d.className = 'swatch' + (pick.accent === k ? ' sel' : '');
+        d.style.background = c; d.textContent = k[0].toUpperCase() + k.slice(1); d.title = k;
+        d.onclick = () => { pick.accent = k; paintThemePickers(); };
+        sw.appendChild(d);
+      }
+      const ly = $('layouts'); ly.innerHTML = '';
+      for (const [k, label] of Object.entries(LAYOUTS)) {
+        const d = document.createElement('div'); d.className = 'layout-opt' + (pick.layout === k ? ' sel' : '');
+        d.innerHTML = layoutSvg(k === 'side', ACCENTS[pick.accent]) + `<b>${label}</b><div class="dim">${k === 'side' ? 'Categories on the left, like TiviMate' : 'Categories across the top'}</div>`;
+        d.onclick = () => { pick.layout = k; paintThemePickers(); };
+        ly.appendChild(d);
+      }
+    }
+    $('themeSave').onclick = async () => {
+      const theme = { accent: pick.accent, layout: pick.layout };
+      try { await save({ theme }); current.data.theme = theme; say('themeMsg', 'Saved. New customers get it right away; existing ones on their next app start.', true); }
+      catch (e) { say('themeMsg', 'Could not save: ' + e.message); }
+    };
+
+    // ---------- Admin ----------
+    const fmtDate = (ts) => ts ? ts.toDate().toISOString().slice(0, 10) : '';
+    async function loadAdmin() {
+      goPage('admin');
+      const body = $('adminRows'); body.innerHTML = '<tr><td colspan="4" class="dim">Loading…</td></tr>';
+      const snap = await F.getDocs(F.collection(db, 'providers'));
+      body.innerHTML = '';
+      if (snap.empty) body.innerHTML = '<tr><td colspan="4" class="dim">No apps yet.</td></tr>';
+      snap.forEach(d => {
+        const data = d.data(), ref = F.doc(db, 'providers', d.id);
+        const tr = document.createElement('tr');
+        const expired = data.expiry && data.expiry.toDate() < new Date();
+        const on = data.active !== false && !expired;
+        tr.innerHTML = `<td><code></code></td><td></td><td><span class="pill ${on ? 'on' : 'off'}">${data.active === false ? 'Switched off' : expired ? 'Expired' : 'Active'}</span><div class="dim">${data.expiry ? 'Expires ' + fmtDate(data.expiry) : ''}</div></td><td class="acts"></td>`;
+        tr.children[0].firstChild.textContent = d.id;
+        tr.children[1].textContent = data.name || '';
+        const acts = tr.children[3];
+        const mk = (t, fn, cls) => { const b = document.createElement('button'); b.className = 'btn ' + (cls || ''); b.type = 'button'; b.textContent = t; b.onclick = fn; acts.appendChild(b); };
+        mk('Manage', () => openProvider(d.id, data));
+        mk(data.active === false ? 'Switch on' : 'Switch off', async () => {
+          try { await F.updateDoc(ref, { active: data.active === false }); loadAdmin(); } catch (e) { say('adminMsg', e.message); }
+        });
+        mk('Expiry', async () => {
+          const v = prompt('Expiry date (YYYY-MM-DD), empty for none', fmtDate(data.expiry)); if (v == null) return;
+          if (v && !/^\d{4}-\d{2}-\d{2}$/.test(v)) return say('adminMsg', 'Use YYYY-MM-DD.');
+          try { await F.updateDoc(ref, { expiry: v ? F.Timestamp.fromDate(new Date(v + 'T23:59:59')) : null }); loadAdmin(); } catch (e) { say('adminMsg', e.message); }
+        });
+        mk('Delete', async () => {
+          if (!confirm(`Delete ${d.id} (${data.name})? Their app stops working.`)) return;
+          try { await F.deleteDoc(ref); loadAdmin(); } catch (e) { say('adminMsg', e.message); }
+        }, 'danger');
+        body.appendChild(tr);
+      });
+    }
+    // 6 characters without look-alikes (no I, L, O, 0, 1).
+    const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    const newCode = () => Array.from(crypto.getRandomValues(new Uint32Array(6)), n => ALPHABET[n % ALPHABET.length]).join('');
+    $('newForm').onsubmit = async (ev) => {
+      ev.preventDefault();
+      const url = cleanUrl($('npUrl').value);
+      if (!validUrl(url)) return say('npMsg', 'The portal must start with http:// or https://');
+      const v = $('npExpiry').value;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const code = newCode();
+        const ref = F.doc(db, 'providers', code);
+        if ((await F.getDoc(ref)).exists()) continue;
+        try {
+          await F.setDoc(ref, {
+            name: $('npName').value.trim(), portals: [{ url }],
+            notification: null, theme: { accent: 'blue', layout: 'classic' },
+            // Firebase account IDs are letters and digits only; drops a pasted-in stray '.' or space.
+            ownerUid: $('npOwner').value.replace(/[^A-Za-z0-9]/g, ''), active: true,
+            expiry: v ? F.Timestamp.fromDate(new Date(v + 'T23:59:59')) : null,
+            createdAt: F.serverTimestamp(), updatedAt: F.serverTimestamp(),
+          });
+          say('npMsg', `Created. Code: ${code} (build their app with this code).`, true);
+          $('newForm').reset(); loadAdmin();
+          return;
+        } catch (e) { return say('npMsg', 'Could not create: ' + e.message); }
+      }
+      say('npMsg', 'Could not find a free code. Try again.');
+    };
+  </script>
+</body>
+</html>
