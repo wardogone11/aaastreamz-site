@@ -75,6 +75,7 @@
       <p>The top bar has <strong>Search</strong>, <strong>Edit channels</strong>, <strong>Guide</strong>, <strong>Ask</strong>, <strong>Recordings</strong>, <strong>Settings</strong> and <strong>Disconnect</strong>. Under it are the tabs: <strong>Live TV</strong>, <strong>Movies</strong> and <strong>Series</strong>.</p>
       <ul>
         <li><strong>Categories</strong> are the row of buttons under the tabs. Scroll left and right through them and press OK to open one.</li>
+        <li><strong>Prefer a list down the side?</strong> Go to <strong>Settings › Interface › Layout</strong> and choose <strong>Side</strong>. The categories become a list on the left, the channels (with what's on now and next) sit in the middle, and the video plays small on the right. Press <strong>Left</strong> once from any channel to jump to the categories, and <strong>Right</strong> to go back. Choose <strong>Top</strong> for the classic layout. Side is for TVs; phones keep the Top layout.</li>
         <li><strong>★ Favorites</strong> holds everything you've starred. <strong>🕘 Recent</strong> (Live TV) shows the last channels you watched.</li>
         <li><strong>Search</strong> filters the list you're looking at by name.</li>
         <li>With two or more playlists, the <strong>playlist button</strong> next to the AAAstreamz logo shows which one you're on. Choose it to switch.</li>
@@ -94,6 +95,7 @@
         <li>Under the video you'll see what's on <strong>now</strong> and <strong>next</strong>.</li>
         <li><strong>In fullscreen:</strong> Up/Down changes the channel, OK pauses and plays, <strong>hold OK</strong> (or ☰ on Fire TV) chooses the audio track, and Back returns to the list.</li>
         <li><strong>Hold OK on a channel in the list</strong> for Add to Favorites, Record or Hide.</li>
+        <li><strong>Auto-reconnect:</strong> if a channel drops or the picture freezes, the app shows <strong>Reconnecting…</strong> and brings it back by itself, usually within a few seconds. If a channel is really off the air, it tells you after a few tries. Just change channel or press Back.</li>
         <li><strong>On a phone or tablet:</strong> tap the video for the controls. The speaker button (bottom right) mutes, and a <strong>🔇 Muted</strong> badge stays on the video until you tap it or the button again. It stays muted when you change channels. Turn the phone sideways and the channel list sits next to the video.</li>
         <li><strong>Starting the app</strong> goes straight back to the last channel you watched, full screen. To keep it in the small window, change <strong>Settings › Interface › Last channel plays</strong>. To open the channel list with nothing playing, change <strong>Settings › Interface › On startup</strong>.</li>
       </ul>
@@ -163,13 +165,13 @@
       <ul>
         <li><strong>Playback:</strong> Buffer size (Fast, Balanced or Stable), Decoding (Auto, Hardware or Software) and Live stream format (Auto, HLS or TS). Leave them on the defaults unless something's wrong (see <a href="#help">If something isn't working</a>).</li>
         <li><strong>Recordings:</strong> where recordings are saved.</li>
-        <li><strong>Interface:</strong> 12h/24h guide times, row size, accent color, what happens on startup, and Guide time shift.</li>
+        <li><strong>Interface:</strong> Layout (Top or Side), 12h/24h guide times, row size, accent color, what happens on startup, and Guide time shift.</li>
         <li><strong>Parental control:</strong> set a PIN and lock categories behind it, separately for Live, Movies and Series.</li>
         <li><strong>Playlists:</strong> add, rename, switch between and remove playlists (see <a href="#playlists">Playlists</a>).</li>
         <li><strong>Backup &amp; restore:</strong> save everything to your phone, or restore it here (see <a href="#backup">Backup &amp; restore</a>).</li>
         <li><strong>Data:</strong> refresh the guide (EPG) or the channel list if something looks out of date.</li>
         <li><strong>Speed test:</strong> checks your internet and your provider (see below).</li>
-        <li><strong>About:</strong> your version number, Check for updates, Report a problem, and an optional Ko-fi tip QR code.</li>
+        <li><strong>About:</strong> your version number, Check for updates, Report a problem, Request a feature, and an optional Ko-fi tip QR code.</li>
       </ul>
       <p>The option you're on turns white, and the option that's switched on has a ✓.</p>
 
@@ -212,6 +214,7 @@
             <tr><td>Play Protect or Android warns about the app</td><td>AAAstreamz isn't from the Play Store, so Android asks first. Choose <strong>More details › Install anyway</strong></td></tr>
             <tr><td>Sound but a black screen</td><td>Settings › Playback › Decoding › <strong>Software</strong></td></tr>
             <tr><td>Channels stall or buffer</td><td>Run <strong>Settings › Speed test</strong>. Then try Settings › Playback › Buffer size › <strong>Stable</strong>, or Live stream format › <strong>TS</strong></td></tr>
+            <tr><td>The picture freezes, or it says "Reconnecting…"</td><td>Give it a few seconds: the app reconnects by itself. If it keeps happening, run <strong>Settings › Speed test</strong>. If it says the channel isn't loading, that channel is down at the provider; change channel</td></tr>
             <tr><td>A channel or movie won't start</td><td>Try another one. Some provider links are dead, and that's on the provider's end</td></tr>
             <tr><td>Movies take a long time to start or keep buffering</td><td>Usually the provider's movie server is slow. Some internet providers also slow these servers down; if movies are fine on a VPN, that's the cause</td></tr>
             <tr><td>Guide is empty or wrong</td><td>Settings › Data › <strong>Refresh EPG</strong>, or use <strong>Guide time shift</strong></td></tr>
@@ -226,6 +229,9 @@
 
       <h3>Report a problem</h3>
       <p>Go to <strong>Settings › About › Report a problem</strong>. Add a note about what happened (optional) and send. We get your app version, device and a log of what went wrong, but <strong>never your username or password</strong>. You'll get a report number. Mention it if you contact us at <a href="mailto:aaastreamz@gmail.com">aaastreamz@gmail.com</a>. Crashes are reported automatically.</p>
+
+      <h3>Request a feature</h3>
+      <p>Have an idea? Go to <strong>Settings › About › 💡 Request a feature</strong>, type it and send. It comes straight to us, and we read every one.</p>
     </div>
   </main>
 
