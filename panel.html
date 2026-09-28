@@ -236,6 +236,10 @@
           <div id="nuResult" class="hidden" style="margin-top:14px">
             <div>Account ID: <code id="nuUid"></code> <button type="button" class="btn" id="nuCopy">Copy</button></div>
             <div class="row" style="margin-top:10px">
+              <button type="button" class="btn" id="nuMailGmail">✉️ Email login details (Gmail)</button>
+              <button type="button" class="btn" id="nuMailApp">✉️ Email app</button>
+            </div>
+            <div class="row" style="margin-top:10px">
               <select id="nuApp" style="padding:8px;border-radius:8px"></select>
               <button type="button" class="btn primary" id="nuAssign">Give them this app</button>
             </div>
@@ -623,10 +627,44 @@
     $('nuPass').value = newPassword();
     $('nuGen').onclick = () => { $('nuPass').value = newPassword(); };
     let creatorAuth = null;
+    // The new login's details, emailed from the admin's own Gmail (a static site can't send mail
+    // itself). authuser picks the admin's Gmail account if several are signed in.
+    const PANEL_URL = location.origin + location.pathname;
+    const ADMIN_GMAIL = 'wardogone11@gmail.com';
+    let lastLogin = null; // { email, pw }
+    const loginMail = ({ email, pw }) => ({
+      to: email,
+      subject: 'Your app control panel login',
+      body: [
+        'Hi,',
+        '',
+        'Your control panel is ready. This is where you manage your app: your server addresses, messages to your customers, and your app\'s colour and layout.',
+        '',
+        'Control panel: ' + PANEL_URL,
+        'Email: ' + email,
+        'Temporary password: ' + pw,
+        '',
+        'To choose your own password: on the sign-in page, type your email and click "Forgot password", then follow the link we email you.',
+        '',
+        'In the panel:',
+        '- Portals: add or change your server addresses. The app tries #1 first, and the others if it can\'t connect or the login isn\'t on that server.',
+        '- Notifications: send a message to all your customers, to customers on certain servers, or to chosen usernames.',
+        '- Themes: pick your app\'s colour and layout.',
+        '',
+        'Changes reach your customers\' apps within about 5 minutes, or the next time they open the app.',
+      ].join('\n'),
+    });
+    const gmailUrl = (m) => 'https://mail.google.com/mail/?' + new URLSearchParams({ authuser: ADMIN_GMAIL, view: 'cm', fs: '1', to: m.to, su: m.subject, body: m.body });
+    const mailtoUrl = (m) => 'mailto:' + encodeURIComponent(m.to) + '?subject=' + encodeURIComponent(m.subject) + '&body=' + encodeURIComponent(m.body);
+    $('nuMailGmail').onclick = () => { if (lastLogin) window.open(gmailUrl(loginMail(lastLogin)), '_blank'); };
+    $('nuMailApp').onclick = () => { if (lastLogin) location.href = mailtoUrl(loginMail(lastLogin)); };
     $('nuCreate').onclick = async () => {
       const email = $('nuEmail').value.trim(), pw = $('nuPass').value;
       if (!email) return say('nuMsg', 'Type their email first.');
       if (pw.length < 8) return say('nuMsg', 'The password needs at least 8 characters.');
+      // Opened now, while the click still counts, so the browser doesn't block it as a pop-up;
+      // filled in with the Gmail draft once the account exists, closed if creating fails.
+      const mailWin = window.open('about:blank', '_blank');
       try {
         if (!creatorAuth) creatorAuth = A.initializeAuth(initializeApp(FIREBASE_CONFIG, 'creator'), { persistence: A.inMemoryPersistence });
         const cred = await A.createUserWithEmailAndPassword(creatorAuth, email, pw);
@@ -637,8 +675,11 @@
         const snap = await F.getDocs(F.collection(db, 'providers'));
         snap.forEach(d => { const o = document.createElement('option'); o.value = d.id; o.textContent = `${d.id} (${d.data().name || ''})`; sel.appendChild(o); });
         show('nuResult');
-        say('nuMsg', `Login created for ${email}. Send them the panel link, their email and the temporary password. They can set their own with "Forgot password".`, true);
+        lastLogin = { email, pw };
+        if (mailWin) mailWin.location.href = gmailUrl(loginMail(lastLogin));
+        say('nuMsg', `Login created for ${email}. A Gmail draft with their login details and the panel link just opened: press Send. (No draft? Use the ✉️ buttons below.)`, true);
       } catch (e) {
+        if (mailWin) mailWin.close();
         const m = {
           'auth/admin-restricted-operation': 'Firebase is blocking new accounts. Turn on Authentication › Settings › User actions › "Enable create (sign-up)".',
           'auth/operation-not-allowed': 'Firebase is blocking new accounts. Turn on Authentication › Settings › User actions › "Enable create (sign-up)".',
