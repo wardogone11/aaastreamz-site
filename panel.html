@@ -224,10 +224,29 @@
           <div class="msg" id="adminMsg"></div>
         </div>
         <div class="card">
+          <h3 style="margin-top:0">Logins</h3>
+          <p class="dim">Create a panel login for a buyer, then give it their app so they can manage it themselves.</p>
+          <label>Buyer's email</label><input type="email" id="nuEmail" placeholder="buyer@example.com">
+          <label>Temporary password</label>
+          <div class="row"><input type="text" id="nuPass" autocomplete="off"><button type="button" class="btn" id="nuGen">New password</button></div>
+          <div class="row" style="margin-top:16px">
+            <button type="button" class="btn primary" id="nuCreate">Create login</button>
+            <button type="button" class="btn" id="nuReset">Email them a password reset</button>
+          </div>
+          <div id="nuResult" class="hidden" style="margin-top:14px">
+            <div>Account ID: <code id="nuUid"></code> <button type="button" class="btn" id="nuCopy">Copy</button></div>
+            <div class="row" style="margin-top:10px">
+              <select id="nuApp" style="padding:8px;border-radius:8px"></select>
+              <button type="button" class="btn primary" id="nuAssign">Give them this app</button>
+            </div>
+          </div>
+          <div class="msg" id="nuMsg"></div>
+        </div>
+        <div class="card">
           <h3 style="margin-top:0">New app</h3>
           <form id="newForm">
             <label>App name</label><input type="text" id="npName" maxlength="60" required>
-            <label>Buyer's account ID (from their "Account created" screen)</label><input type="text" id="npOwner" required>
+            <label>Owner's account ID (yours to manage it yourself, or a login made above)</label><input type="text" id="npOwner" required>
             <label>First portal</label><input type="text" id="npUrl" placeholder="http://their-server.com:8080" required>
             <label>Expires (optional)</label><input type="date" id="npExpiry" style="max-width:200px">
             <div class="row" style="margin-top:16px"><button type="submit" class="btn primary">Create</button></div>
@@ -539,6 +558,14 @@
             loadAdmin();
           } catch (e) { say('adminMsg', e.message); }
         });
+        mk('Owner', async () => {
+          const who = data.ownerUid === (auth.currentUser && auth.currentUser.uid) ? ' (you)' : '';
+          const v = prompt(`Account ID of the login that manages ${d.id}. Now: ${data.ownerUid || 'nobody'}${who}`, data.ownerUid || ''); if (v == null) return;
+          const uid = v.replace(/[^A-Za-z0-9]/g, '');
+          if (uid.length < 20) return say('adminMsg', 'That doesn\'t look like an account ID (about 28 letters and digits).');
+          try { await F.updateDoc(ref, { ownerUid: uid, updatedAt: F.serverTimestamp() }); say('adminMsg', `${d.id} is now managed by ${uid}.`, true); loadAdmin(); }
+          catch (e) { say('adminMsg', e.message); }
+        });
         mk(data.active === false ? 'Switch on' : 'Switch off', async () => {
           try { await F.updateDoc(ref, { active: data.active === false }); loadAdmin(); } catch (e) { say('adminMsg', e.message); }
         });
@@ -581,6 +608,57 @@
         } catch (e) { return say('npMsg', 'Could not create: ' + e.message); }
       }
       say('npMsg', 'Could not find a free code. Try again.');
+    };
+
+    // ---------- Logins (admin) ----------
+    // A second, in-memory Firebase app creates the buyer's account, so the admin stays signed in
+    // (creating a user with the main app would sign the admin out and the new user in).
+    // Needs Authentication › Settings › "Enable create (sign-up)" ON; the rules give a new
+    // account nothing until an app's ownerUid points at it.
+    const newPassword = () => {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+      const s = Array.from(crypto.getRandomValues(new Uint32Array(14)), n => chars[n % chars.length]).join('');
+      return s.slice(0, 5) + '-' + s.slice(5, 10) + '-' + s.slice(10);
+    };
+    $('nuPass').value = newPassword();
+    $('nuGen').onclick = () => { $('nuPass').value = newPassword(); };
+    let creatorAuth = null;
+    $('nuCreate').onclick = async () => {
+      const email = $('nuEmail').value.trim(), pw = $('nuPass').value;
+      if (!email) return say('nuMsg', 'Type their email first.');
+      if (pw.length < 8) return say('nuMsg', 'The password needs at least 8 characters.');
+      try {
+        if (!creatorAuth) creatorAuth = A.initializeAuth(initializeApp(FIREBASE_CONFIG, 'creator'), { persistence: A.inMemoryPersistence });
+        const cred = await A.createUserWithEmailAndPassword(creatorAuth, email, pw);
+        const uid = cred.user.uid;
+        await A.signOut(creatorAuth);
+        $('nuUid').textContent = uid;
+        const sel = $('nuApp'); sel.innerHTML = '';
+        const snap = await F.getDocs(F.collection(db, 'providers'));
+        snap.forEach(d => { const o = document.createElement('option'); o.value = d.id; o.textContent = `${d.id} (${d.data().name || ''})`; sel.appendChild(o); });
+        show('nuResult');
+        say('nuMsg', `Login created for ${email}. Send them the panel link, their email and the temporary password. They can set their own with "Forgot password".`, true);
+      } catch (e) {
+        const m = {
+          'auth/admin-restricted-operation': 'Firebase is blocking new accounts. Turn on Authentication › Settings › User actions › "Enable create (sign-up)".',
+          'auth/operation-not-allowed': 'Firebase is blocking new accounts. Turn on Authentication › Settings › User actions › "Enable create (sign-up)".',
+        }[e.code];
+        say('nuMsg', m || niceAuthError(e));
+      }
+    };
+    $('nuCopy').onclick = () => navigator.clipboard.writeText($('nuUid').textContent);
+    $('nuAssign').onclick = async () => {
+      const code = $('nuApp').value, uid = $('nuUid').textContent;
+      if (!code || !uid) return;
+      if (!confirm(`Give ${code} to this login? They'll manage its servers, notifications and theme.`)) return;
+      try { await F.updateDoc(F.doc(db, 'providers', code), { ownerUid: uid, updatedAt: F.serverTimestamp() }); say('nuMsg', `${code} is now managed by this login.`, true); loadAdmin(); }
+      catch (e) { say('nuMsg', 'Could not assign: ' + e.message); }
+    };
+    $('nuReset').onclick = async () => {
+      const email = $('nuEmail').value.trim();
+      if (!email) return say('nuMsg', 'Type their email first.');
+      try { await A.sendPasswordResetEmail(auth, email); say('nuMsg', `Password reset email sent to ${email}.`, true); }
+      catch (e) { say('nuMsg', niceAuthError(e)); }
     };
   </script>
 </body>
