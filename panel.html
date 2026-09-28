@@ -182,7 +182,12 @@
           <label>Send to</label>
           <div class="row" style="gap:18px">
             <label style="margin:0;font-weight:normal"><input type="radio" name="noteTo" id="noteToAll" value="all" checked> All customers</label>
+            <label style="margin:0;font-weight:normal"><input type="radio" name="noteTo" id="noteToServers" value="servers"> Only customers on these servers</label>
             <label style="margin:0;font-weight:normal"><input type="radio" name="noteTo" id="noteToSome" value="some"> Only these usernames</label>
+          </div>
+          <div id="noteServersBox" class="hidden">
+            <div id="noteServerList" style="display:flex;flex-direction:column;gap:6px;margin-top:6px"></div>
+            <p class="dim" style="margin-top:4px">Only customers whose app is connected to a ticked server see it. Handy when you sell more than one service.</p>
           </div>
           <div id="noteUsersBox" class="hidden">
             <textarea id="noteUsers" rows="3" placeholder="The usernames your customers log in with, separated by commas or one per line, e.g. john123, maria77"></textarea>
@@ -346,7 +351,11 @@
     const cleanUrl = (u) => u.trim().replace(/\/+$/, '');
     const validUrl = (u) => /^https?:\/\/[^\s/]+/i.test(u);
     async function savePortals(list, okText) {
-      try { await save({ portals: list }); current.data.portals = list; paintPortals(); say('portalMsg', okText, true); }
+      try {
+        await save({ portals: list }); current.data.portals = list; paintPortals();
+        paintNoteServers([...document.querySelectorAll('#noteServerList input:checked')].map(c => c.value));
+        say('portalMsg', okText, true);
+      }
       catch (e) { say('portalMsg', 'Could not save: ' + e.message); }
     }
     function paintPortals() {
@@ -397,19 +406,38 @@
       return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
     }
     const parseUsers = (t) => [...new Set(t.split(/[\s,;]+/).map(s => s.trim()).filter(Boolean))];
-    const setNoteTo = (some) => { $('noteToSome').checked = some; $('noteToAll').checked = !some; show('noteUsersBox', some); };
-    $('noteToAll').onchange = () => setNoteTo(false);
-    $('noteToSome').onchange = () => setNoteTo(true);
+    // mode: 'all' | 'servers' (customers connected to ticked portals) | 'some' (chosen usernames).
+    const setNoteTo = (mode) => {
+      $('noteToAll').checked = mode === 'all'; $('noteToServers').checked = mode === 'servers'; $('noteToSome').checked = mode === 'some';
+      show('noteServersBox', mode === 'servers'); show('noteUsersBox', mode === 'some');
+    };
+    $('noteToAll').onchange = () => setNoteTo('all');
+    $('noteToServers').onchange = () => setNoteTo('servers');
+    $('noteToSome').onchange = () => setNoteTo('some');
+    const plural = (k, word) => `${k} ${word}${k === 1 ? '' : 's'}`;
+    function paintNoteServers(ticked) {
+      const box = $('noteServerList'); box.innerHTML = '';
+      (current.data.portals || []).forEach((p, i) => {
+        const l = document.createElement('label'); l.style.cssText = 'margin:0;font-weight:normal;display:flex;gap:8px;align-items:center';
+        const c = document.createElement('input'); c.type = 'checkbox'; c.value = p.url; c.id = 'noteSrv' + i; c.checked = ticked.includes(p.url);
+        l.append(c, document.createTextNode(p.url)); box.appendChild(l);
+      });
+    }
     function paintNote() {
       const n = current.data.notification;
       $('noteTitle').value = n ? n.title : '';
       $('noteText').value = n ? n.text : '';
       const some = !!(n && Array.isArray(n.to) && n.to.length);
-      setNoteTo(some);
+      const servers = n && Array.isArray(n.servers) ? n.servers : [];
+      setNoteTo(some ? 'some' : servers.length ? 'servers' : 'all');
+      paintNoteServers(servers);
       $('noteUsers').value = '';
       if (some) F.getDoc(notePrivateRef()).then(s => { if (s.exists()) $('noteUsers').value = (s.data().usernames || []).join(', '); }).catch(() => {});
       const on = !!(n && n.enabled);
-      $('noteStatus').textContent = on ? (some ? `Showing to ${n.to.length} customer${n.to.length === 1 ? '' : 's'}` : 'Showing to everyone') : 'Not showing';
+      $('noteStatus').textContent = !on ? 'Not showing'
+        : some ? `Showing to ${plural(n.to.length, 'customer')}`
+        : servers.length ? `Showing to customers on ${plural(servers.length, 'server')}`
+        : 'Showing to everyone';
       $('noteStatus').className = 'pill ' + (on ? 'on' : 'off');
       $('noteStop').disabled = !on;
       paintNotePreview();
@@ -423,18 +451,22 @@
     $('noteSend').onclick = async () => {
       const title = $('noteTitle').value.trim(), text = $('noteText').value.trim();
       if (!title && !text) return say('noteMsg', 'Write a title or a message first.');
-      const some = $('noteToSome').checked;
+      const some = $('noteToSome').checked, bySrv = $('noteToServers').checked;
       const users = some ? parseUsers($('noteUsers').value) : [];
+      const servers = bySrv ? [...document.querySelectorAll('#noteServerList input:checked')].map(c => c.value) : [];
       if (some && !users.length) return say('noteMsg', 'Type at least one username, or choose All customers.');
       if (users.length > 200) return say('noteMsg', 'That\'s more than 200 usernames. Send to All customers instead, or split it up.');
+      if (bySrv && !servers.length) return say('noteMsg', 'Tick at least one server, or choose All customers.');
       const notification = { id: String(Date.now()), title, text, enabled: true };
       try {
         if (some) {
           notification.to = await Promise.all(users.map(u => noteTargetHash(current.code, u)));
           await F.setDoc(notePrivateRef(), { usernames: users, updatedAt: F.serverTimestamp() });
         }
+        if (bySrv) notification.servers = servers;
         await save({ notification }); current.data.notification = notification; paintNote();
-        say('noteMsg', some ? `Sent to ${users.length} customer${users.length === 1 ? '' : 's'}. They see it the next time they open the app.` : 'Sent. Customers see it the next time they open the app.', true);
+        say('noteMsg', (some ? `Sent to ${plural(users.length, 'customer')}.` : bySrv ? `Sent to customers on ${plural(servers.length, 'server')}.` : 'Sent.')
+          + ' They see it the next time they open the app.', true);
       } catch (e) { say('noteMsg', 'Could not send: ' + e.message); }
     };
     $('noteStop').onclick = async () => {
