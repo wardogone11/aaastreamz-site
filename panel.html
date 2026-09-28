@@ -526,6 +526,19 @@
         const acts = tr.children[3];
         const mk = (t, fn, cls) => { const b = document.createElement('button'); b.className = 'btn ' + (cls || ''); b.type = 'button'; b.textContent = t; b.onclick = fn; acts.appendChild(b); };
         mk('Manage', () => openProvider(d.id, data));
+        // The name their app uses in its messages ("<name> service has expired…"). The name on the
+        // TV itself is built into the app, so a rename there needs a rebuild too.
+        mk('Rename', async () => {
+          const v = prompt('App name', data.name || ''); if (v == null) return;
+          const name = v.trim();
+          if (!name || name.length > 60) return say('adminMsg', 'A name must be 1 to 60 characters.');
+          try {
+            await F.updateDoc(ref, { name, updatedAt: F.serverTimestamp() });
+            if (current && current.code === d.id) { current.data.name = name; $('provName').textContent = name; }
+            say('adminMsg', `Renamed ${d.id} to "${name}". The name shown on the TV comes from the app build.`, true);
+            loadAdmin();
+          } catch (e) { say('adminMsg', e.message); }
+        });
         mk(data.active === false ? 'Switch on' : 'Switch off', async () => {
           try { await F.updateDoc(ref, { active: data.active === false }); loadAdmin(); } catch (e) { say('adminMsg', e.message); }
         });
