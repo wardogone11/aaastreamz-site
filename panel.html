@@ -169,7 +169,7 @@
 
       <section id="page-notifications" class="page hidden">
         <h2>Notifications</h2>
-        <p class="dim">A message that pops up once on every customer's TV the next time they open the app.</p>
+        <p class="dim">A message that pops up once on your customers' TVs the next time they open the app: all of them, or only the usernames you choose.</p>
         <div class="card" style="margin-top:14px">
           <div class="row" style="justify-content:space-between">
             <h3 style="margin:0">Current notification</h3>
@@ -179,6 +179,15 @@
           <input type="text" id="noteTitle" maxlength="80" placeholder="e.g. Server maintenance tonight">
           <label for="noteText">Message</label>
           <textarea id="noteText" maxlength="500" placeholder="e.g. Some channels may be off between 2 and 4 AM."></textarea>
+          <label>Send to</label>
+          <div class="row" style="gap:18px">
+            <label style="margin:0;font-weight:normal"><input type="radio" name="noteTo" id="noteToAll" value="all" checked> All customers</label>
+            <label style="margin:0;font-weight:normal"><input type="radio" name="noteTo" id="noteToSome" value="some"> Only these usernames</label>
+          </div>
+          <div id="noteUsersBox" class="hidden">
+            <textarea id="noteUsers" rows="3" placeholder="The usernames your customers log in with, separated by commas or one per line, e.g. john123, maria77"></textarea>
+            <p class="dim" style="margin-top:4px">Only you can see this list. Customers' apps only get a scrambled version, so nobody can read your customer list from the app.</p>
+          </div>
           <div class="tv"><div class="note"><b id="notePrevTitle"></b><p id="notePrevText"></p></div></div>
           <div class="row" style="margin-top:16px">
             <button type="button" class="btn primary" id="noteSend">Send to customers</button>
@@ -236,7 +245,7 @@
     // UI only; the real admin check is the UID list in firestore.rules. Keep the two in sync.
     const ADMIN_UIDS = ['9ntxOx1O30QuYE3LVcc7AtTfjUG2'];
     // Same keys and colours as the app's ACCENTS / settings.layout.
-    const ACCENTS = { blue: '#3ea6ff', red: '#ff5252', green: '#4caf50', purple: '#b388ff' };
+    const ACCENTS = { blue: '#3ea6ff', red: '#ff5252', green: '#4caf50', purple: '#b388ff', orange: '#ff9a1f' };
     const LAYOUTS = { classic: 'Top', side: 'Side' };
 
     const $ = (id) => document.getElementById(id);
@@ -376,12 +385,31 @@
     $('newPortal').onkeydown = (ev) => { if (ev.key === 'Enter') $('addPortal').click(); };
 
     // ---------- Notifications ----------
+    // Chosen customers are stored twice: their real usernames in providers/{code}/private/notify
+    // (only the owner and admins can read it, see firestore.rules), and scrambled in the public
+    // notification's `to` list, which is all the apps read. Must match noteTargetHash in the app's
+    // www/index.html: first 32 hex chars of SHA-256("<CODE>:<username, trimmed, lowercase>").
+    const notePrivateRef = () => F.doc(db, 'providers', current.code, 'private', 'notify');
+    async function noteTargetHash(code, username) {
+      const c = String(code).toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const bytes = new TextEncoder().encode(c + ':' + String(username).trim().toLowerCase());
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
+    }
+    const parseUsers = (t) => [...new Set(t.split(/[\s,;]+/).map(s => s.trim()).filter(Boolean))];
+    const setNoteTo = (some) => { $('noteToSome').checked = some; $('noteToAll').checked = !some; show('noteUsersBox', some); };
+    $('noteToAll').onchange = () => setNoteTo(false);
+    $('noteToSome').onchange = () => setNoteTo(true);
     function paintNote() {
       const n = current.data.notification;
       $('noteTitle').value = n ? n.title : '';
       $('noteText').value = n ? n.text : '';
+      const some = !!(n && Array.isArray(n.to) && n.to.length);
+      setNoteTo(some);
+      $('noteUsers').value = '';
+      if (some) F.getDoc(notePrivateRef()).then(s => { if (s.exists()) $('noteUsers').value = (s.data().usernames || []).join(', '); }).catch(() => {});
       const on = !!(n && n.enabled);
-      $('noteStatus').textContent = on ? 'Showing' : 'Not showing';
+      $('noteStatus').textContent = on ? (some ? `Showing to ${n.to.length} customer${n.to.length === 1 ? '' : 's'}` : 'Showing to everyone') : 'Not showing';
       $('noteStatus').className = 'pill ' + (on ? 'on' : 'off');
       $('noteStop').disabled = !on;
       paintNotePreview();
@@ -395,9 +423,19 @@
     $('noteSend').onclick = async () => {
       const title = $('noteTitle').value.trim(), text = $('noteText').value.trim();
       if (!title && !text) return say('noteMsg', 'Write a title or a message first.');
+      const some = $('noteToSome').checked;
+      const users = some ? parseUsers($('noteUsers').value) : [];
+      if (some && !users.length) return say('noteMsg', 'Type at least one username, or choose All customers.');
+      if (users.length > 200) return say('noteMsg', 'That\'s more than 200 usernames. Send to All customers instead, or split it up.');
       const notification = { id: String(Date.now()), title, text, enabled: true };
-      try { await save({ notification }); current.data.notification = notification; paintNote(); say('noteMsg', 'Sent. Customers see it the next time they open the app.', true); }
-      catch (e) { say('noteMsg', 'Could not send: ' + e.message); }
+      try {
+        if (some) {
+          notification.to = await Promise.all(users.map(u => noteTargetHash(current.code, u)));
+          await F.setDoc(notePrivateRef(), { usernames: users, updatedAt: F.serverTimestamp() });
+        }
+        await save({ notification }); current.data.notification = notification; paintNote();
+        say('noteMsg', some ? `Sent to ${users.length} customer${users.length === 1 ? '' : 's'}. They see it the next time they open the app.` : 'Sent. Customers see it the next time they open the app.', true);
+      } catch (e) { say('noteMsg', 'Could not send: ' + e.message); }
     };
     $('noteStop').onclick = async () => {
       const n = current.data.notification; if (!n) return;
