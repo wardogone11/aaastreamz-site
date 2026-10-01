@@ -50,7 +50,7 @@
           <li><a href="#vod">Movies &amp; Series</a></li>
           <li><a href="#ask">Ask: voice &amp; word search</a></li>
           <li><a href="#phone">Phone as a remote</a></li>
-          <li><a href="#record">Recording</a></li>
+          <li><a href="#record">Recording (DVR)</a></li>
           <li><a href="#teams">Follow my teams</a></li>
           <li><a href="#edit">Editing your lists</a></li>
           <li><a href="#settings">Settings</a></li>
@@ -116,6 +116,8 @@
       <ul>
         <li>The video keeps playing, shrunk into the bottom-right corner, while you browse.</li>
         <li>Move with the arrows. Press <strong>OK</strong> on a show to tune to that channel.</li>
+        <li><strong>Hold OK</strong> on a show that hasn't started to record it, or every episode of it (see <a href="#record">Recording</a>).</li>
+        <li id="catchup"><strong>Catch-up (watch shows that already aired):</strong> channels that keep past shows have a small <strong>rewind-clock icon</strong> next to their name. In the Guide, press <strong>OK</strong> on a show that already aired on one of those channels to watch it from the start. Pause and skip work like a movie. How far back you can go depends on your provider (often 1 to 7 days). It needs an Xtream Codes login.</li>
         <li>Press <strong>Back</strong> once to jump up to the categories and switch category without leaving the Guide. Press Back again to close it.</li>
         <li>If shows are listed at the wrong time, use <strong>Settings › Interface › Guide time shift</strong> to move every time by whole hours.</li>
       </ul>
@@ -145,10 +147,34 @@
       </ul>
       <p>Nothing to install on the phone. The address stays the same for that TV, so you can bookmark it and use it again later (the app needs to be open on the TV).</p>
 
-      <h2 id="record">8. Recording</h2>
-      <p>Hold <strong>OK</strong> on a live channel and choose <strong>Record</strong> to record what's on now. Find your recordings (and stop or delete them) under <strong>Recordings</strong> in the top bar. Choose where they're saved in <strong>Settings › Recordings</strong>.</p>
-      <p><strong>Connections:</strong> a recording uses its own connection to your IPTV service. To watch something while recording, your account needs <strong>at least 2 connections</strong>. With a 1-connection account, recording works only while nothing else is playing. Your connections are shared by every TV and phone logged in with the same account, so close the app on your other devices first.</p>
-      <p><strong>Storage:</strong> recordings are big, about 2 to 4 GB for every hour of HD, and most streaming sticks and boxes only have 8 to 16 GB in total. A long recording can fill the device up. Plug in a <strong>USB drive</strong> (or use an SD card, if your box has a slot) and choose it in <strong>Settings › Recordings</strong>.</p>
+      <h2 id="record">8. Recording (DVR)</h2>
+      <p>Record what's on now, set a show to record later, or record every episode of a series. Recordings start by themselves at the right time, even if the app is closed or the TV is asleep.</p>
+      <h3>Record something</h3>
+      <ul>
+        <li><strong>What's on now:</strong> hold <strong>OK</strong> on a live channel and choose <strong>⏺ Record</strong>.</li>
+        <li><strong>A show later today or tomorrow:</strong> open the <a href="#guide">Guide</a>, move to the show, hold <strong>OK</strong> and choose <strong>⏺ Record this show</strong>. A red dot marks it in the Guide. It starts a minute early and runs 5 minutes over, in case the show starts or ends late.</li>
+        <li><strong>Every episode:</strong> in the Guide, hold <strong>OK</strong> on the show and choose <strong>🔁 Record every episode</strong>. Each new episode on that channel is added as the guide lists it, usually about a day ahead. Reruns of an episode you've already got are skipped (for a nightly show, tonight's records and the 2 AM repeat doesn't). To stop, hold OK on the show again and choose <strong>✕ Stop recording this series</strong>, or press <strong>Stop</strong> next to it in Recordings.</li>
+        <li>Only one recording runs at a time. If two shows overlap, the app tells you, and a series skips the episode that clashes (Recordings says which).</li>
+      </ul>
+      <h3>Your recordings</h3>
+      <p>Choose <strong>Recordings</strong> in the top bar. It lists your <strong>Series</strong>, what's <strong>Scheduled</strong> (press Cancel to drop one) and what's <strong>Recorded</strong> (Play or Delete). While playing a recording, Left/Right skips back and forward and OK pauses.</p>
+      <p><strong>Keep the app around:</strong> a series only picks up new episodes while the app is open or running in the background, so open it at least once a day. Recordings that are already scheduled still start with the app closed, and after the TV restarts.</p>
+      <h3>Where recordings are saved</h3>
+      <p>Go to <strong>Settings › Recordings</strong> and choose <strong>Choose folder</strong> (or <strong>Change folder</strong>). Pick <strong>📺 This TV</strong> or a <strong>💾 USB drive</strong>. Each shows how much room is left, in GB and hours. Recordings are big, about 2.7 GB for every hour of HD, and most streaming sticks and boxes only have 8 to 16 GB in total, so a USB drive is best.</p>
+      <ul>
+        <li>The app always keeps <strong>10% of the storage free</strong> so the TV keeps working. If a recording may not fit, it asks first, and a recording that runs out of room stops early (what was recorded is kept).</li>
+        <li>Recordings saved this way are removed if you uninstall AAAstreamz. To keep them, save them to your own server (below).</li>
+      </ul>
+      <h3 id="server">Save recordings to your own server</h3>
+      <p>If you have your own storage online, such as an <strong>Ultra.cc</strong> service, a <strong>NAS</strong> or <strong>Nextcloud</strong> (anything with WebDAV), recordings can be copied there after they finish and removed from the TV, so the TV never fills up.</p>
+      <ul>
+        <li>Open <strong>Settings › Recordings › Save recordings to your server</strong>. Point your phone's camera at the QR code (phone and TV on the same Wi-Fi) and fill in your login there. For Ultra.cc it's just your username, your server name (like "arcturus") and your password. For anything else, paste its WebDAV address. You can also choose <strong>Type it on the TV instead</strong>.</li>
+        <li>The TV checks the login and makes a folder for recordings. Shows go in <em>Shows/&lt;show&gt;</em>, games in <em>Sports/&lt;team&gt;</em>.</li>
+        <li><strong>Every TV can watch them:</strong> set up the same server, with the <strong>same folder name</strong>, on each TV. Recordings made on another TV show in Recordings as <strong>☁ On your server (recorded on another TV)</strong> and play straight from the server. Deleting one removes it from the server for every TV.</li>
+        <li>Your server password stays on the TV and is never shown again. It isn't included in backups.</li>
+      </ul>
+      <h3>Connections</h3>
+      <p>A recording uses its own connection to your IPTV service. To watch something while recording, your account needs <strong>at least 2 connections</strong>. With a 1-connection account, the app warns you that you can't watch anything else while it records. Connections are shared by every TV and phone logged in with the same account.</p>
 
       <h2 id="teams">9. Follow my teams</h2>
       <p>Tell the app which teams you follow and it tells you when their games are on.</p>
