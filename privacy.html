@@ -38,7 +38,7 @@
   <main class="doc">
     <div class="wrap">
       <h1>Privacy Policy</h1>
-      <p class="meta">Effective October 1, 2026</p>
+      <p class="meta">Effective October 4, 2026</p>
 
       <p>AAAstreamz ("the app") is a media player for TV devices. It plays streams from an IPTV provider that <strong>you</strong> choose and log in to. We don't provide, host or sell any channels or content, and you don't create an account with us. This policy explains what information the app uses, where it goes, and why.</p>
 
@@ -50,7 +50,7 @@
       </ul>
 
       <h2>Information stored on your device</h2>
-      <p>These stay on your TV box and are never sent to us: your provider login details, favorites, recently watched channels, playback positions, hidden channels and categories, your parental-control PIN, your settings, and any recordings you make. Uninstalling the app deletes all of it.</p>
+      <p>These stay on your TV box and are never sent to us: your provider login details, favorites, your channel folders, recently watched channels, playback positions, hidden channels and categories, your parental-control PIN, your settings, and any recordings you make. Uninstalling the app deletes all of it.</p>
 
       <h2>Information sent to your IPTV provider</h2>
       <p>To show channels, guides, movies and series and to play them, the app connects to the provider you logged in to. That provider receives your login details and your device's IP address, as with any IPTV player. How your provider handles that is covered by <strong>their</strong> privacy policy, not this one.</p>
@@ -75,18 +75,21 @@
       <h3>App configuration and updates</h3>
       <p>When the app starts, it checks <strong>Firebase Remote Config</strong> (Google) for settings such as whether a new version is available. Google receives the standard technical information needed for that request, such as an installation identifier and your IP address. Updates are downloaded from <strong>GitHub</strong> (github.com), which sees your IP address when the file is downloaded.</p>
 
+      <h3>Finding your provider's server when DNS fails</h3>
+      <p>If your device can't look up your provider's server address (for example because a VPN's blocker blocks it), the app asks a public DNS service instead: <strong>Cloudflare</strong> (1.1.1.1), then <strong>Google</strong> (8.8.8.8), over an encrypted connection. They receive the server name being looked up and your IP address. This only happens when the normal lookup fails.</p>
+
       <h2>Optional features that contact other services</h2>
       <ul>
         <li><strong>Speed test</strong> (only when you run it): the app downloads test data from your provider and from <strong>Cloudflare</strong>'s public speed-test server (speed.cloudflare.com), which sees your IP address. The result is kept in the app's log and is included only if you send a problem report.</li>
         <li><strong>AI search in Ask</strong> (off by default): if you turn it on and enter <strong>your own</strong> Anthropic API key, your search text and a list of programmes currently airing are sent to <strong>Anthropic</strong> (api.anthropic.com) under your key and your Anthropic account. We never see your key or your searches. The free built-in search doesn't send anything anywhere.</li>
         <li><strong>Voice typing</strong> is handled by your device's keyboard (for example Gboard) under that keyboard's own privacy policy. The app only receives the finished text.</li>
-        <li><strong>Phone remote</strong> works only over your home Wi-Fi, between your phone and your TV box. Nothing goes over the internet or to us.</li>
+        <li><strong>Phone remote and logging in from your phone</strong> work only over your home Wi-Fi, between your phone and your TV box. Login details you type on the phone go straight to the TV and then only to your provider. Nothing goes over the internet or to us.</li>
         <li><strong>Backup &amp; restore</strong> (only when you use it): the backup file holds your playlists (including your provider logins), settings and favorites. It goes directly between your TV box and your phone over your home Wi-Fi and is saved on your phone. It never goes over the internet or to us, so keep the file private.</li>
-        <li><strong>Saving recordings to your own server</strong> (only if you set it up): finished recordings, with a small info file (show title, channel and times), are uploaded to the WebDAV server <strong>you</strong> choose, such as your own Ultra.cc service, NAS or Nextcloud, and played back from there. That server's login is kept only on your TV box, is sent only to that server, and isn't included in backups. If you type it on your phone, it goes from the phone to the TV over your home Wi-Fi. Nothing about your recordings goes to us.</li>
+        <li><strong>Saving recordings to your own server</strong> (only if you set it up): finished recordings, with a small info file (show title, channel and times), are copied to the shared folder on your own PC or NAS, or the WebDAV server, that <strong>you</strong> choose (such as your own Ultra.cc service or Nextcloud), and played back from there. That login is kept only on your TV box, is sent only to that PC, NAS or server, and isn't included in backups. If you type it on your phone, it goes from the phone to the TV over your home Wi-Fi. Nothing about your recordings goes to us.</li>
       </ul>
 
       <h2>Who we share information with</h2>
-      <p>Only the service providers named above (Google Firebase, GitHub, Cloudflare, and Anthropic if you turn on AI search), and only for the purposes described. We don't sell, rent or trade personal information, and we don't use it for advertising.</p>
+      <p>Only the service providers named above (Google Firebase, GitHub, Cloudflare, Google public DNS when needed, and Anthropic if you turn on AI search), and only for the purposes described. We don't sell, rent or trade personal information, and we don't use it for advertising.</p>
 
       <h2>How long we keep it</h2>
       <p>Crash and problem reports are kept by Firebase Crashlytics for up to 90 days and then deleted automatically.</p>
