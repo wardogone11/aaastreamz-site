@@ -20,6 +20,10 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://aaastreamz.lol/img/og-image.jpg">
   <link rel="stylesheet" href="style.css?v=20260926a">
+  <style>
+    .coming-soon { border: 1px solid var(--accent, #3ea6ff); margin-bottom: 26px; }
+    .coming-soon p:not(.rel-date) { margin: 0 0 8px; line-height: 1.5; }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -39,6 +43,18 @@
     <div class="wrap">
       <h1>What's new</h1>
       <p class="meta">Every version of AAAstreamz, newest first. The app updates itself: when a new version is out, you'll get a pop-up. You can also check under <strong>Settings › About › Check for updates</strong>.</p>
+
+      <article class="release coming-soon">
+        <h2>Coming soon <span class="rel-tag">Version 1.19</span></h2>
+        <p class="rel-date">In testing now</p>
+        <p>Movies start much faster. Some took over 30 seconds to start, now it's a few seconds.</p>
+        <p>Resuming or replaying a movie starts even faster. The app keeps a small part of each movie on the TV, and never uses more space than the TV can spare.</p>
+        <p>Fewer stalls in movies: when the provider's server slows down, the app reconnects on its own instead of waiting.</p>
+        <p>Shows: a Resume or Next episode button, the episode list opens on the season you were watching, watched episodes are marked, and the next episode plays automatically.</p>
+        <p>Sleep timer in Settings, Playback. Stops playing after 30 minutes to 2 hours.</p>
+        <p>Reminders: in the Guide, hold OK on a show that hasn't started and choose Remind me.</p>
+        <p>Pause live TV: on channels with catch-up, pause as long as you like and pick up where you left off. Press Back to jump to live.</p>
+      </article>
 
       <div id="releases">
         <article class="release" data-tag="v1.8">
@@ -158,13 +174,19 @@
           d.className = 'rel-date';
           d.textContent = new Date(r.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
           var ul = document.createElement('ul');
+          // Notes come as "- item" lines (older releases) or plain lines (from 1.19); the
+          // "Version x what's new" heading line is skipped.
           (r.body || '').split(/\r?\n/).forEach(function (line) {
             var m = line.match(/^\s*[-*]\s+(.*)/);
-            if (!m) return;
+            var text = m ? m[1] : line.trim();
+            if (!text || /^version\b/i.test(text)) return;
             var li = document.createElement('li');
-            li.textContent = m[1].replace(/ > /g, ' › ');
+            li.textContent = text.replace(/ > /g, ' › ');
             ul.appendChild(li);
           });
+          // Once that version is out, the "Coming soon" box for it goes away.
+          var soon = document.querySelector('.coming-soon');
+          if (soon && soon.textContent.indexOf('Version ' + r.tag_name.replace(/^v/, '')) >= 0) soon.remove();
           art.appendChild(h); art.appendChild(d); art.appendChild(ul);
           list.insertBefore(art, list.firstChild);
         });
