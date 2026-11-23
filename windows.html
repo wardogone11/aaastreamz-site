@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AAAstreamz for Windows</title>
+  <meta name="description" content="AAAstreamz Winbloze Edition: the IPTV player on your Windows PC, with the TV guide, Multi-View, recording and a phone remote.">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a1f5c">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AAAstreamz">
+  <meta property="og:title" content="AAAstreamz for Windows">
+  <meta property="og:description" content="The AAAstreamz IPTV player on your Windows PC, with the TV guide, Multi-View, recording and a phone remote.">
+  <meta property="og:url" content="https://aaastreamz.lol/windows.html">
+  <meta property="og:image" content="https://aaastreamz.lol/img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://aaastreamz.lol/img/og-image.jpg">
+  <link rel="stylesheet" href="style.css?v=20260926a">
+  <style>
+    .dl-box { text-align: center; margin: 8px 0 30px; }
+    .dl-box .meta { margin-top: 12px; }
+    .steps p { margin: 0 0 12px; line-height: 1.55; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html"><img class="logo" src="img/icon-64.png" width="30" height="30" alt=""><span><span class="aaa">AAA</span>streamz</span></a>
+      <nav class="nav">
+        <a href="index.html#install">Install</a>
+        <a href="windows.html" aria-current="page">Windows</a>
+        <a href="guide.html">Manual</a>
+        <a href="faq.html">FAQ</a>
+        <a href="releases.html">What's new</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="doc">
+    <div class="wrap">
+      <h1>AAAstreamz for Windows</h1>
+      <p class="meta">Winbloze Edition. The same player you use on your TV, now on your Windows 10 or 11 PC.</p>
+
+      <div class="dl-box">
+        <a class="btn primary" id="dl" href="https://github.com/wardogone11/aaastreamz-site/releases/latest/download/AAAstreamz-Winbloze-Setup.exe">⬇ Download for Windows</a>
+        <p class="meta" id="dlmeta">Windows 10 or 11, 64 bit. About 120 MB.</p>
+      </div>
+
+      <h2>What you get</h2>
+      <div class="grid">
+        <div class="card"><div class="icon">📺</div><h3>Live TV + Guide</h3><p>Browse by category, star favorites and see what's on now and later. Use the mouse and keyboard, or your phone.</p></div>
+        <div class="card"><div class="icon">🎬</div><h3>Movies &amp; Series</h3><p>Pick up where you left off, with a seek bar and a Continue watching shelf. Audio and subtitle choices show up when a stream has them.</p></div>
+        <div class="card"><div class="icon">🧩</div><h3>Multi-View</h3><p>Watch two live channels side by side. Click one to hear it, double-click to watch it alone.</p></div>
+        <div class="card"><div class="icon">⏺</div><h3>Record</h3><p>Record now, schedule a show, or record every episode. Recordings get a picture, play with a working seek bar, and keep going when you close the window to the tray.</p></div>
+        <div class="card"><div class="icon">📱</div><h3>Phone remote</h3><p>Scan the code and your phone becomes a remote, a keyboard and a TV guide for the PC.</p></div>
+        <div class="card"><div class="icon">🔄</div><h3>Updates itself</h3><p>When a new version is out, the app asks if you want it. It never restarts in the middle of a recording.</p></div>
+      </div>
+
+      <h2>How to install</h2>
+      <div class="steps">
+        <p>Download the file above and double-click it. Windows may say it protected your PC because this installer is new and not yet widely downloaded. Choose <strong>More info</strong>, then <strong>Run anyway</strong>.</p>
+        <p>Pick a folder, or keep the one it suggests. Open <strong>AAAstreamz Winbloze Edition</strong> from the desktop or the Start menu, then sign in with your IPTV details, the same ones you use on the TV.</p>
+        <p>The first time it opens, Windows may ask if the app can use your home network. Choose <strong>Allow</strong> on private networks if you want the phone remote.</p>
+        <p>To remove it, go to Windows <strong>Settings › Apps › Installed apps</strong> and uninstall it. Your recordings stay where you saved them.</p>
+      </div>
+
+      <h2>Good to know</h2>
+      <div class="steps">
+        <p>AAAstreamz is a player. It doesn't come with channels or playlists. You need your own IPTV service.</p>
+        <p>Some 4K titles can be choppy on PCs that can't decode them in hardware, so the 4K lists are hidden on Windows.</p>
+        <p>Scheduled recordings only run while the app is open. Closing the window sends it to the tray by the clock, and it keeps recording there. Use <strong>Quit</strong> in the tray menu to close it completely.</p>
+        <p>Questions? Read the <a href="faq.html">FAQ</a>, or see <a href="releases.html">what's new</a>.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>© 2026 AAAstreamz</span>
+      <span><a href="guide.html">Manual</a> · <a href="faq.html">FAQ</a> · <a href="releases.html">What's new</a> · <a href="privacy.html">Privacy policy</a></span>
+    </div>
+  </footer>
+
+  <script>
+  // Shows the newest version number next to the download, from the same GitHub releases the app updates from.
+  (function () {
+    fetch('https://api.github.com/repos/wardogone11/aaastreamz-site/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (r) {
+        if (!r || !r.tag_name) return;
+        document.getElementById('dlmeta').textContent = 'Version ' + r.tag_name.replace(/^v/, '') + '. Windows 10 or 11, 64 bit. About 120 MB.';
+      })
+      .catch(function () {});
+  })();
+  </script>
+</body>
+</html>
